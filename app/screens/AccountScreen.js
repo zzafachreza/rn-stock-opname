@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import React, { useState, useContext } from "react";
+import { StyleSheet, View, FlatList, AsyncStorage } from "react-native";
 
 import { ListItem, ListItemSeparator } from "../components/lists";
 import colors from "../config/colors";
@@ -7,6 +7,7 @@ import Icon from "../components/Icon";
 import routes from "../navigation/routes";
 import Screen from "../components/Screen";
 import store from "../api/store";
+import { AuthContext } from "../auth/context";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
 const menuItems = [
@@ -28,11 +29,15 @@ const menuItems = [
 ];
 
 function AccountScreen({ navigation }) {
+  const { singOut } = useContext(AuthContext);
+  const { dataUser } = useContext(AuthContext);
+  // setUsername(store.getData);
+
   return (
     <Screen style={styles.screen}>
       <View style={styles.container}>
         <ListItem
-          title="Mosh Hamedani"
+          title={dataUser}
           subTitle="programmingwithmosh@gmail.com"
           image={require("../assets/mosh.jpg")}
         />
@@ -56,7 +61,7 @@ function AccountScreen({ navigation }) {
           )}
         />
       </View>
-      <TouchableHighlight onPress={() => console.log(store.getData())}>
+      <TouchableHighlight onPress={() => singOut()}>
         <ListItem
           title="Log Out"
           IconComponent={<Icon name="logout" backgroundColor="#ffe66d" />}

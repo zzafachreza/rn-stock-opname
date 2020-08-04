@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Image, AsyncStorage, Button } from "react-native";
 // import AsyncStorage from "@react-native-community/async-storage";
 import * as Yup from "yup";
 import axios from "axios";
 import store from "../api/store";
-
+import { AuthContext } from "../auth/context";
 import Screen from "../components/Screen";
 import { Form, FormField, SubmitButton } from "../components/forms";
 
@@ -13,20 +13,28 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().required().min(3).label("Password"),
 });
 
-const handleSubmit = ({ username, password }) => {
-  const data = new FormData();
-  data.append("username", username);
-  data.append("password", password);
-
-  axios({
-    method: "post",
-    url: "https://setiabudhi-supermarket.co.id/api/stockopname/",
-    data,
-  }).then((res) => {
-    store.storeData(res.data.username);
-  });
-};
 function LoginScreen(props) {
+  const { signIn } = useContext(AuthContext);
+
+  const handleSubmit = ({ username, password }) => {
+    const data = new FormData();
+    data.append("username", username);
+    data.append("password", password);
+    axios({
+      method: "post",
+      url: "https://setiabudhi-supermarket.co.id/api/stockopname/",
+      data,
+    }).then((res) => {
+      if (res.data.password === 404) {
+        alert("Password is Wrong !");
+      } else {
+        // alert("berhasil Login");
+        store.storeData(res.data.username);
+        signIn(res.data.username);
+      }
+    });
+  };
+
   return (
     <Screen style={styles.container}>
       <Image style={styles.logo} source={require("../assets/logo-red.png")} />
